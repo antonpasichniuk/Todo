@@ -2,6 +2,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Todo.Data.Context;
+using Todo.Data.Repositories;
+using Todo.Domain.Interfaces;
+using Todo.Domain.Interfaces.Repositories;
 
 namespace Todo.Data
 {
@@ -16,6 +19,14 @@ namespace Todo.Data
                     options.UseNpgsql(configuration.GetConnectionString(nameof(TodoContext)))
                         .UseSnakeCaseNamingConvention()
                 );
+        }
+
+        public static void AddRepositories(IServiceCollection services)
+        {
+            services.AddScoped<ITasksListRepository, TasksListRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+
+            services.AddScoped<IUnitOfWork, UnitOfWork<TodoContext>>();
         }
     }
 }

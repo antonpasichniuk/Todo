@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Todo.Data.Context;
@@ -11,13 +12,14 @@ using Todo.Data.Context;
 namespace Todo.Data.Migrations
 {
     [DbContext(typeof(TodoContext))]
-    partial class TodoContextModelSnapshot : ModelSnapshot
+    [Migration("20250706155844_AddAuditableEntityForTasksListAndUserModels")]
+    partial class AddAuditableEntityForTasksListAndUserModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("todo")
                 .HasAnnotation("ProductVersion", "9.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
@@ -56,7 +58,7 @@ namespace Todo.Data.Migrations
                     b.HasIndex("CreatedById")
                         .HasDatabaseName("ix_tasks_lists_created_by_id");
 
-                    b.ToTable("tasks_lists", "todo");
+                    b.ToTable("tasks_lists", (string)null);
                 });
 
             modelBuilder.Entity("Todo.Domain.Entities.TasksListAccess", b =>
@@ -80,7 +82,7 @@ namespace Todo.Data.Migrations
                     b.HasIndex("TasksListId")
                         .HasDatabaseName("ix_tasks_list_accesses_tasks_list_id");
 
-                    b.ToTable("tasks_list_accesses", "todo");
+                    b.ToTable("tasks_list_accesses", (string)null);
                 });
 
             modelBuilder.Entity("Todo.Domain.Entities.User", b =>
@@ -101,7 +103,7 @@ namespace Todo.Data.Migrations
                     b.HasKey("Id")
                         .HasName("pk_users");
 
-                    b.ToTable("users", "todo");
+                    b.ToTable("users", (string)null);
                 });
 
             modelBuilder.Entity("Todo.Domain.Entities.TasksList", b =>

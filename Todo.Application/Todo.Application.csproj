@@ -7,7 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Services\Interfaces\" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Todo.Common\Todo.Common.csproj" />
+    <ProjectReference Include="..\Todo.Domain\Todo.Domain.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,5 @@
-﻿using Todo.Domain.Enums;
+﻿using Todo.Common.Result;
+using Todo.Domain.Enums;
 
 namespace Todo.Domain.Entities
 {
@@ -11,5 +12,23 @@ namespace Todo.Domain.Entities
         public User? User { get; set; }
 
         public TasksListAccessRole AccessRole { get; set; }
+
+        private TasksListAccess() {}
+
+        private TasksListAccess(int userId, TasksListAccessRole role)
+        {
+            UserId = userId;
+            AccessRole = role;
+        }
+
+        public static Result<TasksListAccess> CreateOwnerAccess(int userId)
+        {
+            if (userId == default)
+            {
+                Result.Validation("User id is undefined");
+            }
+
+            return new TasksListAccess(userId, TasksListAccessRole.Owned);
+        }
     }
 }

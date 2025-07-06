@@ -5,8 +5,12 @@ namespace Todo.Data.Context
 {
     public partial class TodoContext
     {
+        private const string Schema = "todo";
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.HasDefaultSchema(Schema);
+
             modelBuilder.Entity<TasksList>(builder =>
             {
                 builder.HasOne(tl => tl.CreatedBy)
