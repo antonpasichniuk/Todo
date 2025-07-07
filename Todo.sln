@@ -15,6 +15,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Todo.Infrastructure.Data", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Todo.Infrastructure.Persistence", "Todo.Infrastructure.Persistence\Todo.Infrastructure.Persistence.csproj", "{FBCC3E6D-9822-4DAF-913D-7E0FC3D1B3FA}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Todo.Application.Tests", "Todo.Application.Tests\Todo.Application.Tests.csproj", "{3D01CECB-C17B-47B0-986D-95C360CD8E74}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,9 +49,16 @@ Global
 		{FBCC3E6D-9822-4DAF-913D-7E0FC3D1B3FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FBCC3E6D-9822-4DAF-913D-7E0FC3D1B3FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FBCC3E6D-9822-4DAF-913D-7E0FC3D1B3FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D01CECB-C17B-47B0-986D-95C360CD8E74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D01CECB-C17B-47B0-986D-95C360CD8E74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D01CECB-C17B-47B0-986D-95C360CD8E74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D01CECB-C17B-47B0-986D-95C360CD8E74}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3D01CECB-C17B-47B0-986D-95C360CD8E74} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CEBEE045-5EFC-492D-8F77-FC7096D4B1DA}
