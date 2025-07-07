@@ -56,6 +56,9 @@ namespace Todo.Domain.Entities
                 Result.Validation("Tasks list name should be within 1 and 255");
             }
 
+            Name = name;
+            ModifiedAt = DateTime.UtcNow;
+
             return this;
         }
 

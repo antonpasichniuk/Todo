@@ -15,13 +15,17 @@ namespace Todo.Infrastructure.Data.Repositories
 
         public Task<bool> HasAccess(int tasksListId, int userId, CancellationToken cancellationToken = default)
         {
-            return _dbSet.AnyAsync(x => x.Id == tasksListId && x.Accesses.Any(access => access.UserId == userId), cancellationToken);
+            return _dbSet
+                .Include(x => x.Accesses)
+                .AnyAsync(x => x.Id == tasksListId && x.Accesses.Any(access => access.UserId == userId), cancellationToken);
         }
 
         public Task<bool> HasOwnerAccess(int tasksListId, int userId, CancellationToken cancellationToken = default)
         {
-            return _dbSet.AnyAsync(x => x.Id == tasksListId 
-                && x.Accesses.Any(access => access.UserId == tasksListId && access.AccessRole == TasksListAccessRole.Owned), cancellationToken);
+            return _dbSet
+                .Include(x => x.Accesses)
+                .AnyAsync(x => x.Id == tasksListId 
+                    && x.Accesses.Any(access => access.UserId == userId && access.AccessRole == TasksListAccessRole.Owned), cancellationToken);
         }
 
         public Task<List<TasksList>> GetPageAsync(

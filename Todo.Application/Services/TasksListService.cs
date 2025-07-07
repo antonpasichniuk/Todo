@@ -50,15 +50,18 @@ namespace Todo.Application.Services
                 return Result.NotFound("Tasks list was not found");
             }
 
+            var updatedTasksList = tasksList.Update(request.Name);
+
+            if (updatedTasksList.IsFailure)
+            {
+                return updatedTasksList.Error;
+            }
+
             tasksListRepository.Update(tasksList);
 
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
-            return new TasksListProjection
-            {
-                Id = tasksList.Id,
-                Name = tasksList.Name
-            };
+            return TasksListProjection.FromDomain.Compile().Invoke(tasksList);
         }
 
         public async Task<Result<int>> DeleteTasksListAsync(int id, CancellationToken cancellationToken = default)
@@ -100,7 +103,7 @@ namespace Todo.Application.Services
                 return Result.NotFound("Task was not found");
             }
 
-            return new TasksListProjection { Id = tasksListResult.Id, Name = tasksListResult.Name };
+            return TasksListProjection.FromDomain.Compile().Invoke(tasksListResult);
         }
 
         public async Task<Result<AggregatedList<TasksListProjection>>> GetTasksListPageAsync(TasksListFiltering filtering, PagePagination pagination, CancellationToken cancellationToken = default)
@@ -110,11 +113,7 @@ namespace Todo.Application.Services
 
             return new AggregatedList<TasksListProjection>
             {
-                Items = [.. tasksLists.Select(x => new TasksListProjection
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                })],
+                Items = [.. tasksLists.Select(TasksListProjection.FromDomain.Compile())],
                 TotalCount = totalCount
             };
         }
