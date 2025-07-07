@@ -1,4 +1,5 @@
-using DataInjection = Todo.Data.DependencyInjection;
+using DataInjection = Todo.Infrastructure.Data.DependencyInjection;
+using PersistenceInjection = Todo.Infrastructure.Persistence.DependencyInjection;
 using ApplicationInjection = Todo.Application.DependencyInjection;
 using Todo.Application.Services.Interfaces;
 using Todo.Web.Infrastructure;
@@ -14,10 +15,13 @@ var services = builder.Services;
 services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 services.AddEndpointsApiExplorer();
-services.AddSwaggerGen();
+services.AddSwaggerGen(options =>
+{
+    options.OperationFilter<AddRequiredHeaderParameter>();
+});
 
 DataInjection.AddDbContext(services, configuration);
-DataInjection.AddRepositories(services);
+PersistenceInjection.AddRepositories(services);
 
 ApplicationInjection.AddServices(services);
 

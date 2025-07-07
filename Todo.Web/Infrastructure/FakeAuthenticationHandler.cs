@@ -14,7 +14,7 @@ namespace Todo.Web.Infrastructure
         {
             var userIdHeader = Request.Headers["X-User-Id"].FirstOrDefault();
 
-            if (string.IsNullOrWhiteSpace(userIdHeader) || !Guid.TryParse(userIdHeader, out var userId))
+            if (string.IsNullOrWhiteSpace(userIdHeader) || !int.TryParse(userIdHeader, out var userId))
             {
                 return Task.FromResult(AuthenticateResult.Fail("Missing or invalid X-User-Id header."));
             }

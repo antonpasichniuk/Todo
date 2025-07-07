@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Todo.Application.Models.Requests;
+using Todo.Application.Models.Projections;
 using Todo.Application.Models.Requests.Page;
+using Todo.Application.Models.Requests.TasksList;
 using Todo.Application.Models.Requests.TasksList.Page;
 using Todo.Application.Services.Interfaces;
 using Todo.Web.Infrastructure;
 using Todo.Web.Models.Requests;
+using Todo.Web.Models.Responses.Common;
 
 namespace Todo.Web.Controllers.TasksLists
 {
@@ -35,25 +37,41 @@ namespace Todo.Web.Controllers.TasksLists
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTasksList(int id)
+        public async Task<IActionResult> DeleteTasksList(int id, CancellationToken cancellationToken)
         {
-            var result = await tasksListService.DeleteTasksListAsync(id);
+            var result = await tasksListService.DeleteTasksListAsync(id, cancellationToken);
 
             return result.ToHttpResult();
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetTasksList(int id)
+        public async Task<IActionResult> GetTasksList(int id, CancellationToken cancellationToken)
         {
-            var result = await tasksListService.GetTasksListByIdAsync(id);
+            var result = await tasksListService.GetTasksListByIdAsync(id, cancellationToken);
 
             return result.ToHttpResult();
         }
 
         [HttpGet]
-        public Task<IActionResult> GetTasksLists([FromQuery] TasksListFiltering filtering, [FromQuery] PagePagination pagination)
+        public async Task<IActionResult> GetTasksLists([FromQuery] TasksListFiltering filtering, [FromQuery] PagePagination pagination, CancellationToken cancellationToken)
         {
-            
+            var result = await tasksListService.GetTasksListPageAsync(filtering, pagination, cancellationToken);
+
+            if (result.IsFailure)
+            {
+                return result.ToHttpResult();
+            }
+
+            return new OkObjectResult(new PagedList<TasksListProjection>
+            {
+                Items = result.Value.Items,
+                Metadata = new PagedMetadata
+                {
+                    CurrentPage = pagination.CurrentPage,
+                    PageSize = pagination.PageSize,
+                    TotalItems = result.Value.TotalCount,
+                }
+            });
         }
     }
 }

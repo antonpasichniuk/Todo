@@ -1,19 +1,16 @@
-﻿using System.Linq.Expressions;
-using Todo.Application.Models.Projections;
+﻿using Todo.Application.Models.Projections;
 using Todo.Application.Models.Projections.Common;
 using Todo.Application.Models.Requests.Page;
 using Todo.Application.Models.Requests.TasksList;
 using Todo.Application.Models.Requests.TasksList.Page;
+using Todo.Application.Repositories.Interfaces;
 using Todo.Application.Services.Interfaces;
 using Todo.Common.Result;
 using Todo.Domain.Entities;
-using Todo.Domain.Enums;
-using Todo.Domain.Interfaces;
-using Todo.Domain.Interfaces.Repositories;
 
 namespace Todo.Application.Services
 {
-    public class TasksListService(IUserContext userContext, ITasksListRepository tasksListRepository, IUserRepository userRepository, IUnitOfWork unitOfWork) : ITasksListService
+    public class TasksListService(IUserContext userContext, ITasksListRepository tasksListRepository, IUnitOfWork unitOfWork) : ITasksListService
     {
         public async Task<Result<TasksListProjection>> CreateTasksListAsync(CreateTasksList request, CancellationToken cancellationToken = default)
         {
@@ -66,7 +63,7 @@ namespace Todo.Application.Services
 
         public async Task<Result<int>> DeleteTasksListAsync(int id, CancellationToken cancellationToken = default)
         {
-            var hasOwnerAccess = await tasksListRepository.HasAccess(id, userContext.Id, TasksListAccessRole.Owned, cancellationToken: cancellationToken);
+            var hasOwnerAccess = await tasksListRepository.HasOwnerAccess(id, userContext.Id, cancellationToken: cancellationToken);
 
             if (!hasOwnerAccess)
             {
@@ -75,7 +72,7 @@ namespace Todo.Application.Services
 
             var tasksList = await tasksListRepository.FirstOrDefaultAsync(x => x.Id == id, cancellationToken: cancellationToken);
 
-            if (tasksList == null) 
+            if (tasksList == null)
             {
                 return Result.NotFound("Tasks list was not found");
             }
@@ -89,7 +86,7 @@ namespace Todo.Application.Services
 
         public async Task<Result<TasksListProjection>> GetTasksListByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            var hasAccess = await tasksListRepository.HasAccess(id, userContext.Id, TasksListAccessRole.Owned, cancellationToken: cancellationToken);
+            var hasAccess = await tasksListRepository.HasOwnerAccess(id, userContext.Id, cancellationToken: cancellationToken);
 
             if (!hasAccess)
             {
@@ -108,24 +105,17 @@ namespace Todo.Application.Services
 
         public async Task<Result<AggregatedList<TasksListProjection>>> GetTasksListPageAsync(TasksListFiltering filtering, PagePagination pagination, CancellationToken cancellationToken = default)
         {
-            Expression<Func<TasksList, bool>> isAvailableForUser = x => x.Accesses!.Any(access => access.UserId == userContext.Id);
+            var totalCount = await tasksListRepository.CountPageAsync(userContext.Id, filtering, cancellationToken: cancellationToken);
+            var tasksLists = await tasksListRepository.GetPageAsync(userContext.Id, filtering, pagination, cancellationToken: cancellationToken);
 
-            var totalCount = await tasksListRepository.CountAsync(isAvailableForUser, cancellationToken: cancellationToken);
-
-            var tasksLists = await tasksListRepository.GetOrderedAsync(
-                isAvailableForUser, 
-                pagination.PageSize, 
-                pagination.Skip, 
-                cancellationToken: cancellationToken);
-            
-        }
-
-        private Expression<Func<TasksList, TOrder>> GetTasksListPageOrder<TOrder>(TasksListFiltering tasksListFiltering)
-        {
-            return tasksListFiltering.Sorting.By switch
+            return new AggregatedList<TasksListProjection>
             {
-                TasksListPageSorting.Created => (Expression<Func<TasksList, TOrder>>)(x => x.CreatedAt),
-                _ => x => x.CreatedAt
+                Items = [.. tasksLists.Select(x => new TasksListProjection
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                })],
+                TotalCount = totalCount
             };
         }
     }

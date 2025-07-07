@@ -24,6 +24,7 @@ namespace Todo.Domain.Entities
             CreatedById = createdById;
             CreatedAt = DateTime.UtcNow;
             ModifiedAt = DateTime.UtcNow;
+            Accesses = [ownerAccess];
         }
 
         public static Result<TasksList> Create(string name, int createdById) 
